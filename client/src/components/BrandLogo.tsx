@@ -1,7 +1,17 @@
 import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 
-type Props = { to?: string; className?: string; variant?: 'light' | 'vibrant'; compact?: boolean };
+type LogoSize = 'hero' | 'dashboard';
+
+type Props = {
+  to?: string;
+  className?: string;
+  variant?: 'light' | 'vibrant';
+  /** @deprecated utiliser size="dashboard" */
+  compact?: boolean;
+  /** hero = pages publiques (~150px), dashboard = moitié (~75px) */
+  size?: LogoSize;
+};
 const CUSTOM_LOGO_CANDIDATES = [
   '/branding/logo.png',
   '/branding/logo.webp',
@@ -17,11 +27,12 @@ function CrownIcon({ className = 'h-5 w-5' }: { className?: string }) {
   );
 }
 
-export function BrandLogo({ to = '/', className = '', variant = 'light', compact = false }: Props) {
+export function BrandLogo({ to = '/', className = '', variant = 'light', compact = false, size }: Props) {
   const vibrant = variant === 'vibrant';
   const [logoIndex, setLogoIndex] = useState(0);
-  const iconSize = compact ? 'h-[150px] w-[150px]' : 'h-[150px] w-[150px]';
-  const imgSize = 150;
+  const resolvedSize: LogoSize = size ?? (compact ? 'dashboard' : 'hero');
+  const imgSize = resolvedSize === 'dashboard' ? 75 : 150;
+  const iconSize = resolvedSize === 'dashboard' ? 'h-[75px] w-[75px]' : 'h-[150px] w-[150px]';
   const hasCustomLogo = logoIndex < CUSTOM_LOGO_CANDIDATES.length;
   const cacheBuster = useMemo(() => Date.now(), []);
   const customLogoSrc = hasCustomLogo ? `${CUSTOM_LOGO_CANDIDATES[logoIndex]}?v=${cacheBuster}` : '';
@@ -41,7 +52,7 @@ export function BrandLogo({ to = '/', className = '', variant = 'light', compact
     <span className={`inline-flex items-center ${className}`}>
       {customLogoNode ?? (
         <span className={`flex shrink-0 items-center justify-center ${iconSize}`}>
-          <CrownIcon className="h-20 w-20" />
+          <CrownIcon className={resolvedSize === 'dashboard' ? 'h-10 w-10' : 'h-20 w-20'} />
         </span>
       )}
     </span>
@@ -49,8 +60,8 @@ export function BrandLogo({ to = '/', className = '', variant = 'light', compact
     <span className={`inline-flex items-center ${className}`}>
       {customLogoNode ?? (
         <svg
-          width={150}
-          height={150}
+          width={imgSize}
+          height={imgSize}
           viewBox="0 0 36 36"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

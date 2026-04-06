@@ -9,7 +9,7 @@ export function Shell({ children, variant = 'public' }: Props) {
     <div className="flex min-h-screen flex-col bg-fp-canvas">
       <header className="border-b border-fp-line bg-fp-canvas">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
-          <BrandLogo to="/" />
+          <BrandLogo to="/" size="dashboard" />
           {variant === 'team' && (
             <span className="text-sm font-medium text-fp-muted">Espace groupe</span>
           )}

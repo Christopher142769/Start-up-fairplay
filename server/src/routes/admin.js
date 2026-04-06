@@ -12,6 +12,7 @@ import { OtpCode } from '../models/OtpCode.js';
 import { SubmissionFile } from '../models/SubmissionFile.js';
 import { Thread } from '../models/Thread.js';
 import { Message } from '../models/Message.js';
+import { School } from '../models/School.js';
 import { sendMail } from '../mail.js';
 import { generateSixDigitCode } from '../utils/otp.js';
 import { signAdminToken, requireAdmin } from '../middleware/auth.js';
@@ -108,6 +109,27 @@ adminRouter.post('/auth/verify-code', authLimit, async (req, res) => {
 });
 
 adminRouter.use(requireAdmin);
+
+adminRouter.get('/schools', async (_req, res) => {
+  const schools = await School.find().sort({ name: 1 }).lean();
+  res.json(schools);
+});
+
+adminRouter.post('/schools', async (req, res) => {
+  const name = String(req.body?.name ?? '').trim();
+  if (!name) {
+    return res.status(400).json({ error: 'Nom d’école requis' });
+  }
+  try {
+    const school = await School.create({ name });
+    res.status(201).json(school);
+  } catch (e) {
+    if (e && typeof e === 'object' && 'code' in e && e.code === 11000) {
+      return res.status(409).json({ error: 'Cette école existe déjà' });
+    }
+    throw e;
+  }
+});
 
 adminRouter.get('/groups', async (_req, res) => {
   const groups = await Group.find()

@@ -75,7 +75,7 @@ function IconUpload({ className = 'h-6 w-6' }: { className?: string }) {
   );
 }
 
-const glassSidebarCard =
+export const glassSidebarCard =
   'rounded-2xl border border-white/10 bg-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]';
 
 function MobileWave({ className = '' }: { className?: string }) {
@@ -161,7 +161,7 @@ export function TeamDashboardLayout({
           }`}
         >
           <div className="flex items-center justify-between gap-2 lg:block">
-            <BrandLogo to="/" variant="vibrant" compact />
+            <BrandLogo to="/" variant="vibrant" size="dashboard" />
             <button
               type="button"
               className="rounded-lg border border-white/15 bg-white/5 p-2 lg:hidden"
@@ -223,7 +223,7 @@ export function TeamDashboardLayout({
               className={`relative ${homeVibeHeader} px-4 pb-14 pt-[max(0.65rem,env(safe-area-inset-top))] shadow-[0_20px_50px_rgba(46,8,84,0.45)] lg:px-8 lg:pb-8 lg:pt-6`}
             >
               <div className="flex items-center justify-between gap-3">
-                <BrandLogo to="/" variant="vibrant" compact />
+                <BrandLogo to="/" variant="vibrant" size="dashboard" />
                 <div className="flex items-center gap-2">
                   <span
                     className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-vibe-coral via-vibe-cyan/80 to-[#5b0d6f] text-sm font-bold uppercase tracking-wide text-white shadow-[0_10px_28px_rgba(34,211,238,0.35),inset_0_2px_0_rgba(255,255,255,0.22)] ring-2 ring-vibe-cyan/50 lg:inline-flex"

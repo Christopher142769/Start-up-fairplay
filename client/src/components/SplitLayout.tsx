@@ -45,7 +45,7 @@ export function SplitLayout({
 
       <header className="relative z-30 mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 py-6 sm:px-8">
         <div className="flex items-center gap-3">
-          <BrandLogo to="/" variant="vibrant" />
+          <BrandLogo to="/" variant="vibrant" size="hero" />
         </div>
 
         <div className="hidden items-center gap-3 rounded-pill border border-white/20 bg-white/[0.08] px-3 py-2 shadow-[0_16px_44px_rgba(15,4,30,0.42),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-xl md:flex">
