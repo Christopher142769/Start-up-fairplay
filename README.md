@@ -81,11 +81,25 @@ Render convient bien à ce dépôt : une **Web Service** pour l’API Node et un
 
 **E-mail (codes OTP, etc.)** : reprendre les variables du fichier `server/.env.example` (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`).
 
-**Premier admin / écoles** : en local ou via un shell Render (one-off), avec les mêmes variables que dans `.env.example` :
+### Admin et écoles en production — option 1 (depuis ton ordinateur)
+
+C’est la méthode la plus simple quand l’API est déjà sur Render : tu exécutes le **seed** en local, mais en pointant vers **la même base** que la prod.
+
+1. Copie l’URI MongoDB utilisée sur Render (Atlas ou autre) : c’est exactement la valeur de **`MONGODB_URI`** du Web Service.
+2. Sur ta machine, édite `server/.env` (ou crée-le depuis `server/.env.example`) et mets :
+   - **`MONGODB_URI`** = cette URI de production ;
+   - **`ADMIN_EMAIL`** et **`ADMIN_PASSWORD`** = les identifiants admin que tu veux utiliser sur le site déployé.
+3. Installe les dépendances si besoin, puis lance le seed :
 
 ```bash
 cd server && npm install && npm run seed
 ```
+
+Le script crée les **écoles** par défaut et le **compte admin** s’il n’existe pas encore avec cet e-mail. S’il existe déjà, le mot de passe **n’est pas mis à jour** automatiquement : il faudrait supprimer l’utilisateur admin dans MongoDB ou adapter le script.
+
+4. Connecte-toi sur le front déployé via l’URL secrète d’admin (voir `client/src/lib/adminPaths.ts`) avec `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+
+**Option 2** (shell Render) : même commande `npm run seed` dans l’environnement du service, avec les variables déjà définies dans le dashboard Render.
 
 Les fichiers uploadés sont sur le disque du service (`server/uploads/`). Sur un plan gratuit Render, ce volume peut être **éphémère** : prévoir une sauvegarde ou un stockage objet (S3, etc.) pour une prod sérieuse.
 
