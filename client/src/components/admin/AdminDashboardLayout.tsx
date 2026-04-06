@@ -142,7 +142,7 @@ export function AdminDashboardLayout({ children, onLogout }: Props) {
                   <div className="min-w-0 flex-1">
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">Espace organisation</p>
                     <p className="truncate font-display text-sm font-semibold text-white">Groupes inscrits</p>
-                    <p className="truncate text-xs text-white/50">ZIP, messagerie, écoles</p>
+                    <p className="truncate text-xs text-white/50">Écoles, groupes, suppression</p>
                   </div>
                 </div>
               </div>

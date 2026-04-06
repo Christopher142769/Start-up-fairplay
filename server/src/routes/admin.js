@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import mongoose from 'mongoose';
 import path from 'path';
 import fs from 'fs';
 import archiver from 'archiver';
@@ -21,6 +22,33 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadsRoot = path.join(__dirname, '../../uploads');
 
 export const adminRouter = Router();
+
+/** Supprime fichiers déposés, fil de discussion, OTP liés, puis le groupe. */
+async function deleteGroupCascade(groupId) {
+  const gid = new mongoose.Types.ObjectId(groupId);
+  const group = await Group.findById(gid);
+  if (!group) return false;
+
+  const files = await SubmissionFile.find({ group: gid }).lean();
+  for (const f of files) {
+    try {
+      fs.unlinkSync(path.join(uploadsRoot, f.relativePath));
+    } catch {
+      /* fichier déjà absent */
+    }
+  }
+  await SubmissionFile.deleteMany({ group: gid });
+
+  const thread = await Thread.findOne({ group: gid });
+  if (thread) {
+    await Message.deleteMany({ thread: thread._id });
+    await Thread.deleteOne({ _id: thread._id });
+  }
+
+  await OtpCode.deleteMany({ email: group.leaderEmail });
+  await Group.deleteOne({ _id: gid });
+  return true;
+}
 
 const authLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -131,6 +159,22 @@ adminRouter.post('/schools', async (req, res) => {
   }
 });
 
+adminRouter.delete('/schools/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.isValidObjectId(id)) {
+    return res.status(400).json({ error: 'Identifiant invalide' });
+  }
+  const school = await School.findById(id);
+  if (!school) return res.status(404).json({ error: 'École introuvable' });
+
+  const groups = await Group.find({ school: id }).select('_id').lean();
+  for (const g of groups) {
+    await deleteGroupCascade(g._id);
+  }
+  await School.findByIdAndDelete(id);
+  res.json({ ok: true, groupsDeleted: groups.length });
+});
+
 adminRouter.get('/groups', async (_req, res) => {
   const groups = await Group.find()
     .populate('school')
@@ -149,6 +193,16 @@ adminRouter.get('/groups', async (_req, res) => {
       adminUnread: unreadByGroup[String(g._id)] || 0,
     }))
   );
+});
+
+adminRouter.delete('/groups/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.isValidObjectId(id)) {
+    return res.status(400).json({ error: 'Identifiant invalide' });
+  }
+  const ok = await deleteGroupCascade(id);
+  if (!ok) return res.status(404).json({ error: 'Groupe introuvable' });
+  res.json({ ok: true });
 });
 
 adminRouter.get('/groups/:id/submissions.zip', async (req, res) => {

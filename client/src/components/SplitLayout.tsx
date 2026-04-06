@@ -43,18 +43,34 @@ export function SplitLayout({
     <div className="relative flex min-h-screen flex-col overflow-x-hidden text-white">
       <VibeBackdrop />
 
-      <header className="relative z-30 mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 py-6 sm:px-8">
-        <div className="flex items-center gap-3">
-          <BrandLogo to="/" variant="vibrant" size="hero" />
-        </div>
+      <header className="relative z-30 flex w-full justify-center px-4 pt-6 pb-2 sm:px-6 sm:pt-8">
+        <div
+          className={`flex w-full max-w-3xl flex-col items-center gap-3 rounded-[1.75rem] border border-white/22 bg-white/[0.09] px-4 py-3 shadow-[0_20px_50px_rgba(15,4,30,0.38),inset_0_1px_0_rgba(255,255,255,0.2)] backdrop-blur-2xl sm:max-w-4xl sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4 sm:px-5 sm:py-3.5`}
+        >
+          <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-center">
+            <div className="flex flex-1 justify-center sm:flex-none">
+              <div className="rounded-2xl border border-white/30 bg-gradient-to-br from-white/20 to-white/[0.06] p-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_8px_24px_rgba(0,0,0,0.15)] ring-1 ring-white/15">
+                <BrandLogo to="/accueil" variant="vibrant" size="hero" priorityLoad />
+              </div>
+            </div>
+            <button
+              type="button"
+              className="flex h-11 w-11 shrink-0 flex-col items-center justify-center gap-1.5 rounded-xl border border-white/25 bg-white/10 shadow-inner backdrop-blur-md sm:hidden"
+              aria-expanded={menuOpen}
+              aria-label="Menu"
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              <span className="h-0.5 w-5 rounded-full bg-white" />
+              <span className="h-0.5 w-5 rounded-full bg-white" />
+            </button>
+          </div>
 
-        <div className="hidden items-center gap-3 rounded-pill border border-white/20 bg-white/[0.08] px-3 py-2 shadow-[0_16px_44px_rgba(15,4,30,0.42),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-xl md:flex">
-          <nav className="flex items-center gap-1">
+          <nav className="hidden w-full flex-wrap items-center justify-center gap-1 sm:flex sm:w-auto sm:max-w-none">
             {navItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
-                className="rounded-pill px-4 py-2 text-sm font-semibold text-white/85 transition hover:bg-white/12 hover:text-white"
+                className="rounded-pill px-3.5 py-2 text-sm font-semibold text-white/88 transition hover:bg-white/14 hover:text-white sm:px-4"
               >
                 {item.label}
               </Link>
@@ -62,37 +78,21 @@ export function SplitLayout({
             {topLink ? (
               <Link
                 to={topLink.to}
-                className="rounded-pill px-4 py-2 text-sm font-semibold text-white/70 transition hover:bg-white/10 hover:text-white"
+                className="rounded-pill px-3.5 py-2 text-sm font-semibold text-white/65 transition hover:bg-white/10 hover:text-white sm:px-4"
               >
                 {topLink.label}
               </Link>
             ) : null}
           </nav>
+
           {topAction ? (
             <Link
               to={topAction.to}
-              className="rounded-pill border border-vibe-cyan/40 bg-gradient-to-r from-[#2E0854] via-[#5b0d6f] to-[#8B008B] px-5 py-2 text-sm font-bold text-white shadow-[0_10px_26px_rgba(46,8,84,0.45)] transition hover:-translate-y-0.5 hover:brightness-110"
+              className="w-full rounded-pill border border-vibe-cyan/45 bg-gradient-to-r from-[#2E0854] via-[#5b0d6f] to-[#8B008B] px-5 py-2.5 text-center text-sm font-bold text-white shadow-[0_10px_28px_rgba(46,8,84,0.5)] transition hover:-translate-y-0.5 hover:brightness-110 sm:inline-flex sm:w-auto"
             >
               {topAction.label}
             </Link>
           ) : null}
-        </div>
-
-        <div className="flex items-center gap-3 sm:gap-4 md:hidden">
-          <button
-            type="button"
-            className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-lg border border-white/30 bg-white/5 md:hidden"
-            aria-expanded={menuOpen}
-            aria-label="Menu"
-            onClick={() => setMenuOpen((o) => !o)}
-          >
-            <span className="h-0.5 w-5 rounded-full bg-white" />
-            <span className="h-0.5 w-5 rounded-full bg-white" />
-          </button>
-          <div className="hidden flex-col gap-1.5 md:flex" aria-hidden>
-            <span className="h-0.5 w-7 rounded-full bg-white" />
-            <span className="h-0.5 w-7 rounded-full bg-white" />
-          </div>
         </div>
       </header>
 

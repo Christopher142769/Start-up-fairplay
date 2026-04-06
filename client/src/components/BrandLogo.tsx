@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
+/** hero = pages publiques ; dashboard = barres équipe / admin (48px, comme les avatars). */
 type LogoSize = 'hero' | 'dashboard';
 
 type Props = {
@@ -9,8 +10,9 @@ type Props = {
   variant?: 'light' | 'vibrant';
   /** @deprecated utiliser size="dashboard" */
   compact?: boolean;
-  /** hero = pages publiques (~150px), dashboard = moitié (~75px) */
   size?: LogoSize;
+  /** Skeleton + chargement prioritaire (hero / LCP). défaut : true si hero. */
+  priorityLoad?: boolean;
 };
 const CUSTOM_LOGO_CANDIDATES = [
   '/branding/logo.png',
@@ -27,32 +29,63 @@ function CrownIcon({ className = 'h-5 w-5' }: { className?: string }) {
   );
 }
 
-export function BrandLogo({ to = '/', className = '', variant = 'light', compact = false, size }: Props) {
+export function BrandLogo({
+  to = '/',
+  className = '',
+  variant = 'light',
+  compact = false,
+  size,
+  priorityLoad,
+}: Props) {
   const vibrant = variant === 'vibrant';
   const [logoIndex, setLogoIndex] = useState(0);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const resolvedSize: LogoSize = size ?? (compact ? 'dashboard' : 'hero');
-  const imgSize = resolvedSize === 'dashboard' ? 75 : 150;
-  const iconSize = resolvedSize === 'dashboard' ? 'h-[75px] w-[75px]' : 'h-[150px] w-[150px]';
+  const imgSize = resolvedSize === 'dashboard' ? 48 : 150;
+  const iconSize = resolvedSize === 'dashboard' ? 'h-12 w-12 max-h-12 max-w-12' : 'h-[150px] w-[150px]';
   const hasCustomLogo = logoIndex < CUSTOM_LOGO_CANDIDATES.length;
-  const cacheBuster = useMemo(() => Date.now(), []);
-  const customLogoSrc = hasCustomLogo ? `${CUSTOM_LOGO_CANDIDATES[logoIndex]}?v=${cacheBuster}` : '';
+  /** Pas de query anti-cache : le fichier `public/branding/logo.*` peut être mis en cache navigateur. */
+  const customLogoSrc = hasCustomLogo ? CUSTOM_LOGO_CANDIDATES[logoIndex] : '';
+
+  useEffect(() => {
+    setImgLoaded(false);
+  }, [logoIndex, customLogoSrc]);
+  const usePriority = priorityLoad ?? resolvedSize === 'hero';
+  const showImgSkeleton = hasCustomLogo && resolvedSize === 'hero' && usePriority && !imgLoaded;
 
   const customLogoNode = hasCustomLogo ? (
-    <img
-      src={customLogoSrc}
-      alt="Logo Fair Play"
-      width={imgSize}
-      height={imgSize}
-      onError={() => setLogoIndex((i) => i + 1)}
-      className={`${iconSize} shrink-0 object-contain drop-shadow-[0_10px_28px_rgba(0,0,0,0.28)]`}
-    />
+    <span className={`relative inline-flex shrink-0 ${iconSize}`}>
+      {showImgSkeleton ? (
+        <span
+          className="absolute inset-0 animate-pulse rounded-2xl bg-gradient-to-br from-white/25 via-fuchsia-200/20 to-cyan-200/15 ring-1 ring-white/30"
+          aria-hidden
+        />
+      ) : null}
+      <img
+        src={customLogoSrc}
+        alt="Logo Fair Play"
+        width={imgSize}
+        height={imgSize}
+        loading={usePriority ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchPriority={usePriority ? 'high' : 'low'}
+        onLoad={() => setImgLoaded(true)}
+        onError={() => {
+          setImgLoaded(false);
+          setLogoIndex((i) => i + 1);
+        }}
+        className={`relative z-[1] ${iconSize} object-contain transition-opacity duration-500 ease-out ${
+          showImgSkeleton ? 'opacity-0' : 'opacity-100'
+        } ${resolvedSize === 'dashboard' ? 'drop-shadow-md' : 'drop-shadow-[0_10px_28px_rgba(0,0,0,0.28)]'}`}
+      />
+    </span>
   ) : null;
 
   const inner = vibrant ? (
     <span className={`inline-flex items-center ${className}`}>
       {customLogoNode ?? (
         <span className={`flex shrink-0 items-center justify-center ${iconSize}`}>
-          <CrownIcon className={resolvedSize === 'dashboard' ? 'h-10 w-10' : 'h-20 w-20'} />
+          <CrownIcon className={resolvedSize === 'dashboard' ? 'h-7 w-7' : 'h-20 w-20'} />
         </span>
       )}
     </span>

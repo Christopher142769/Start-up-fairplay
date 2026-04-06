@@ -47,22 +47,24 @@ export function AdminDashboard() {
     }
   }, []);
 
-  const loadGroups = useCallback(async () => {
+  const loadGroups = useCallback(async (): Promise<GroupRow[] | null> => {
     if (!getAdminToken()) {
       nav(ADMIN_ENTRY_PATH);
-      return;
+      return null;
     }
     setErr(null);
     try {
       const g = await api<GroupRow[]>('/api/admin/groups', { auth: 'admin' });
       setRows(g);
+      return g;
     } catch (e) {
       if (e instanceof Error && e.message.includes('Non autorisé')) {
         setAdminToken(null);
         nav(ADMIN_ENTRY_PATH);
-        return;
+        return null;
       }
       setErr(e instanceof Error ? e.message : 'Erreur');
+      return null;
     } finally {
       setLoading(false);
     }
@@ -123,6 +125,50 @@ export function AdminDashboard() {
       setErr(e2 instanceof Error ? e2.message : 'Erreur');
     } finally {
       setSending(false);
+    }
+  }
+
+  async function removeSchool(id: string, name: string) {
+    if (
+      !confirm(
+        `Supprimer l’école « ${name} » ?\n\nTous les groupes rattachés seront supprimés (fichiers déposés, fil de messages et accès).`
+      )
+    ) {
+      return;
+    }
+    const prevSelected = selected;
+    setErr(null);
+    try {
+      await api(`/api/admin/schools/${id}`, { method: 'DELETE', auth: 'admin' });
+      await loadSchools();
+      const g = await loadGroups();
+      if (g && prevSelected && !g.some((r) => r._id === prevSelected._id)) {
+        setSelected(null);
+        setMsgs([]);
+      }
+    } catch (e2) {
+      setErr(e2 instanceof Error ? e2.message : 'Erreur');
+    }
+  }
+
+  async function removeGroup(g: GroupRow) {
+    if (
+      !confirm(
+        `Supprimer définitivement le groupe « ${g.groupName} » (${g.leaderEmail}) ?\n\nTous les fichiers, messages et accès seront supprimés.`
+      )
+    ) {
+      return;
+    }
+    setErr(null);
+    try {
+      await api(`/api/admin/groups/${g._id}`, { method: 'DELETE', auth: 'admin' });
+      if (selected?._id === g._id) {
+        setSelected(null);
+        setMsgs([]);
+      }
+      await loadGroups();
+    } catch (e2) {
+      setErr(e2 instanceof Error ? e2.message : 'Erreur');
     }
   }
 
@@ -213,16 +259,23 @@ export function AdminDashboard() {
               {addingSchool ? 'Ajout…' : 'Ajouter'}
             </CoralButton>
           </form>
-          <ul className="mt-4 flex max-h-40 flex-wrap gap-2 overflow-y-auto">
+          <ul className="mt-4 flex max-h-48 flex-col gap-2 overflow-y-auto sm:max-h-40">
             {schools.length === 0 ? (
               <li className="text-sm text-stone-500">Aucune école — ajoute la première ci-dessus.</li>
             ) : (
               schools.map((s) => (
                 <li
                   key={s._id}
-                  className="rounded-pill border border-stone-200 bg-white/80 px-3 py-1.5 text-xs font-semibold text-stone-700 shadow-sm"
+                  className="flex items-center justify-between gap-2 rounded-2xl border border-stone-200 bg-white/90 px-3 py-2 text-sm font-medium text-stone-800 shadow-sm"
                 >
-                  {s.name}
+                  <span className="min-w-0 truncate">{s.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeSchool(s._id, s.name)}
+                    className="shrink-0 rounded-xl border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-bold text-red-700 transition hover:bg-red-100"
+                  >
+                    Supprimer
+                  </button>
                 </li>
               ))
             )}
@@ -232,8 +285,10 @@ export function AdminDashboard() {
         <div className="grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-start">
           <section className={`${lightPanel} overflow-hidden p-0`}>
             <div className="border-b border-white/50 bg-white/30 px-5 py-4 backdrop-blur-sm">
-              <h2 className="font-display text-lg font-bold text-stone-900">Groupes inscrits</h2>
-              <p className="text-xs text-stone-600">ZIP et ouverture du fil de messages</p>
+              <h2 className="font-display text-lg font-bold text-stone-900">Utilisateurs — groupes</h2>
+              <p className="text-xs text-stone-600">
+                Chaque ligne est un compte groupe (chef + école). ZIP, messages ou suppression définitive.
+              </p>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full text-left text-sm">
@@ -242,7 +297,7 @@ export function AdminDashboard() {
                     <th className="px-4 py-3">Groupe</th>
                     <th className="px-4 py-3">École</th>
                     <th className="px-4 py-3">Fichiers</th>
-                    <th className="px-4 py-3" />
+                    <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white/40">
@@ -251,6 +306,9 @@ export function AdminDashboard() {
                       <td className="px-4 py-3 align-top">
                         <p className="font-semibold text-stone-900">{g.groupName}</p>
                         <p className="text-xs text-stone-500">{g.leaderEmail}</p>
+                        <p className="mt-0.5 text-[10px] text-stone-400">
+                          Inscrit le {new Date(g.createdAt).toLocaleDateString('fr-FR')}
+                        </p>
                         {(g.adminUnread ?? 0) > 0 ? (
                           <span className="mt-1 inline-block rounded-full bg-vibe-coral/15 px-2 py-0.5 text-[10px] font-bold text-vibe-coral">
                             {g.adminUnread} non lu(s)
@@ -275,6 +333,13 @@ export function AdminDashboard() {
                             className="rounded-xl border-2 border-[#2E0854] bg-gradient-to-r from-[#2E0854] to-[#5b0d6f] px-3 py-1.5 text-xs font-bold text-white shadow-md transition hover:brightness-110"
                           >
                             Messages
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeGroup(g)}
+                            className="rounded-xl border-2 border-red-300 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-800 transition hover:bg-red-100"
+                          >
+                            Supprimer
                           </button>
                         </div>
                       </td>
