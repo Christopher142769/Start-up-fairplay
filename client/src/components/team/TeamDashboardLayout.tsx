@@ -174,15 +174,15 @@ export function TeamDashboardLayout({
             </button>
           </div>
 
-          <div className={`mt-6 ${glassSidebarCard} p-4`}>
-            <div className="flex items-start gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-vibe-coral/90 via-vibe-cyan/50 to-[#5b0d6f] text-sm font-bold uppercase tracking-wide text-white shadow-lg ring-2 ring-vibe-cyan/40">
+          <div className={`mt-4 ${glassSidebarCard} p-2.5`}>
+            <div className="flex items-start gap-2">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-vibe-coral/90 via-vibe-cyan/50 to-[#5b0d6f] text-[10px] font-bold uppercase tracking-wide text-white shadow-md ring-1 ring-vibe-cyan/35">
                 {inits}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-display text-sm font-bold leading-snug text-white">{groupName}</p>
-                <p className="mt-1 text-xs text-white/55">{schoolName}</p>
-                <p className="mt-0.5 truncate text-[11px] text-white/40">{leaderEmail}</p>
+                <p className="font-display text-xs font-bold leading-tight text-white">{groupName}</p>
+                <p className="mt-0.5 text-[10px] leading-tight text-white/55">{schoolName}</p>
+                <p className="mt-0.5 truncate text-[9px] leading-tight text-white/40">{leaderEmail}</p>
               </div>
             </div>
           </div>
@@ -220,13 +220,13 @@ export function TeamDashboardLayout({
           {/* En-tête : même bloc vague + glass sur mobile et desktop */}
           <div className="relative z-20 shrink-0 overflow-hidden">
             <div
-              className={`relative ${homeVibeHeader} px-4 pb-14 pt-[max(0.65rem,env(safe-area-inset-top))] shadow-[0_20px_50px_rgba(46,8,84,0.45)] lg:px-8 lg:pb-8 lg:pt-6`}
+              className={`relative ${homeVibeHeader} px-4 pb-11 pt-[max(0.65rem,env(safe-area-inset-top))] shadow-[0_20px_50px_rgba(46,8,84,0.45)] lg:px-8 lg:pb-6 lg:pt-6`}
             >
               <div className="flex items-center justify-between gap-3">
                 <BrandLogo to="/" variant="vibrant" size="dashboard" />
                 <div className="flex items-center gap-2">
                   <span
-                    className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-vibe-coral via-vibe-cyan/80 to-[#5b0d6f] text-sm font-bold uppercase tracking-wide text-white shadow-[0_10px_28px_rgba(34,211,238,0.35),inset_0_2px_0_rgba(255,255,255,0.22)] ring-2 ring-vibe-cyan/50 lg:inline-flex"
+                    className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-vibe-coral via-vibe-cyan/80 to-[#5b0d6f] text-[11px] font-bold uppercase tracking-wide text-white shadow-[0_8px_22px_rgba(34,211,238,0.3),inset_0_1px_0_rgba(255,255,255,0.2)] ring-1 ring-vibe-cyan/45 lg:inline-flex"
                     aria-hidden
                   >
                     {inits}
@@ -244,29 +244,10 @@ export function TeamDashboardLayout({
                 </div>
               </div>
 
-              <div className="mt-4 w-full rounded-[1.35rem] border border-white/18 bg-white/[0.07] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl lg:mt-5 lg:max-w-2xl">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-white/90 shadow-[inset_0_-2px_6px_rgba(0,0,0,0.15)]">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor" aria-hidden>
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                      />
-                    </svg>
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">Espace équipe</p>
-                    <p className="truncate font-display text-sm font-semibold text-white">{schoolName}</p>
-                    <p className="truncate text-xs text-white/50">{groupName}</p>
-                  </div>
-                </div>
-              </div>
-
               <button
                 type="button"
                 onClick={() => setMobileNav(true)}
-                className="absolute bottom-0 left-1/2 z-10 flex h-[4.25rem] w-[4.25rem] -translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-vibe-coral via-vibe-cyan to-[#5b0d6f] text-base font-bold uppercase tracking-wide text-white shadow-[0_14px_40px_rgba(34,211,238,0.4),inset_0_2px_0_rgba(255,255,255,0.22)] ring-[5px] ring-[#e6e2f5] lg:hidden"
+                className="absolute bottom-0 left-1/2 z-10 flex h-11 w-11 -translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-vibe-coral via-vibe-cyan to-[#5b0d6f] text-[10px] font-bold uppercase tracking-wide text-white shadow-[0_10px_28px_rgba(34,211,238,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] ring-[3px] ring-[#e6e2f5] lg:hidden"
                 aria-label="Ouvrir le menu et le compte"
               >
                 {inits}
@@ -296,7 +277,7 @@ export function TeamDashboardLayout({
                   aria-label="Accueil"
                 >
                   <span
-                    className={`flex h-[3.1rem] w-[3.1rem] items-center justify-center rounded-full text-sm font-bold uppercase tracking-tight shadow-lg ${
+                    className={`flex h-10 w-10 items-center justify-center rounded-full text-[10px] font-bold uppercase tracking-tight shadow-lg ${
                       activeTab === 'home'
                         ? 'bg-vibe-coral text-white ring-[3px] ring-white'
                         : 'bg-white text-[#1a0a2e] ring-2 ring-neutral-900/20'

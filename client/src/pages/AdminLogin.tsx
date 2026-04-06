@@ -58,8 +58,7 @@ export function AdminLogin() {
       titleBefore="Backstage"
       titleAccent="Fair Play."
       subtitle="Espace organisation : mot de passe + code e-mail. Pas de reset auto — garde tes accès safe."
-      topAction={{ to: '/connexion', label: 'Groupes' }}
-      topLink={{ to: '/connexion', label: 'Groupes' }}
+      topAction={{ to: '/connexion', label: 'Espace groupes' }}
       showArt
     >
       {step === 1 ? (

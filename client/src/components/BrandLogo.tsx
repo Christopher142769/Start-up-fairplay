@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-/** hero = pages publiques ; dashboard = barres équipe / admin (48px, comme les avatars). */
-type LogoSize = 'hero' | 'dashboard';
+/** hero = pages publiques ; bar = navbar (72px) ; dashboard = barres équipe / admin (48px). */
+type LogoSize = 'hero' | 'bar' | 'dashboard';
 
 type Props = {
   to?: string;
@@ -41,8 +41,13 @@ export function BrandLogo({
   const [logoIndex, setLogoIndex] = useState(0);
   const [imgLoaded, setImgLoaded] = useState(false);
   const resolvedSize: LogoSize = size ?? (compact ? 'dashboard' : 'hero');
-  const imgSize = resolvedSize === 'dashboard' ? 48 : 150;
-  const iconSize = resolvedSize === 'dashboard' ? 'h-12 w-12 max-h-12 max-w-12' : 'h-[150px] w-[150px]';
+  const imgSize = resolvedSize === 'dashboard' ? 48 : resolvedSize === 'bar' ? 72 : 150;
+  const iconSize =
+    resolvedSize === 'dashboard'
+      ? 'h-12 w-12 max-h-12 max-w-12'
+      : resolvedSize === 'bar'
+        ? 'h-[72px] w-[72px] max-h-[72px] max-w-[72px]'
+        : 'h-[150px] w-[150px]';
   const hasCustomLogo = logoIndex < CUSTOM_LOGO_CANDIDATES.length;
   /** Pas de query anti-cache : le fichier `public/branding/logo.*` peut être mis en cache navigateur. */
   const customLogoSrc = hasCustomLogo ? CUSTOM_LOGO_CANDIDATES[logoIndex] : '';
@@ -76,7 +81,11 @@ export function BrandLogo({
         }}
         className={`relative z-[1] ${iconSize} object-contain transition-opacity duration-500 ease-out ${
           showImgSkeleton ? 'opacity-0' : 'opacity-100'
-        } ${resolvedSize === 'dashboard' ? 'drop-shadow-md' : 'drop-shadow-[0_10px_28px_rgba(0,0,0,0.28)]'}`}
+        } ${
+          resolvedSize === 'dashboard' || resolvedSize === 'bar'
+            ? 'drop-shadow-md'
+            : 'drop-shadow-[0_10px_28px_rgba(0,0,0,0.28)]'
+        }`}
       />
     </span>
   ) : null;
@@ -85,7 +94,9 @@ export function BrandLogo({
     <span className={`inline-flex items-center ${className}`}>
       {customLogoNode ?? (
         <span className={`flex shrink-0 items-center justify-center ${iconSize}`}>
-          <CrownIcon className={resolvedSize === 'dashboard' ? 'h-7 w-7' : 'h-20 w-20'} />
+          <CrownIcon
+            className={resolvedSize === 'dashboard' ? 'h-7 w-7' : resolvedSize === 'bar' ? 'h-11 w-11' : 'h-20 w-20'}
+          />
         </span>
       )}
     </span>

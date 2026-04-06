@@ -63,7 +63,6 @@ export function ForgotPassword() {
       titleAccent="mot de passe."
       subtitle="Réservé aux groupes : on t’envoie un code à 6 chiffres sur l’e-mail du chef d’équipe."
       topAction={{ to: '/inscription', label: "S'inscrire" }}
-      topLink={{ to: '/connexion', label: 'Connexion' }}
     >
       {step === 1 ? (
         <form className="space-y-5" onSubmit={request}>
