@@ -33,16 +33,26 @@ async function run() {
   const adminEmail = process.env.ADMIN_EMAIL;
   const adminPassword = process.env.ADMIN_PASSWORD;
   if (adminEmail && adminPassword) {
-    const existing = await AdminUser.findOne({ email: adminEmail.toLowerCase().trim() });
+    const emailNorm = adminEmail.toLowerCase().trim();
+    const existing = await AdminUser.findOne({ email: emailNorm });
+    const passwordHash = await bcrypt.hash(adminPassword, 12);
+    const forceReset = String(process.env.ADMIN_RESET_PASSWORD || '').toLowerCase() === 'true';
+
     if (!existing) {
-      const passwordHash = await bcrypt.hash(adminPassword, 12);
       await AdminUser.create({
-        email: adminEmail.toLowerCase().trim(),
+        email: emailNorm,
         passwordHash,
       });
-      console.log('Compte admin créé :', adminEmail);
+      console.log('Compte admin créé :', emailNorm);
+    } else if (forceReset) {
+      existing.passwordHash = passwordHash;
+      await existing.save();
+      console.log('Mot de passe admin mis à jour pour :', emailNorm);
     } else {
-      console.log('Compte admin déjà présent :', adminEmail);
+      console.log('Compte admin déjà présent :', emailNorm);
+      console.log(
+        '(Le mot de passe en base ne change pas automatiquement. Pour le remplacer : ADMIN_RESET_PASSWORD=true npm run seed)'
+      );
     }
   } else {
     console.log('ADMIN_EMAIL / ADMIN_PASSWORD non définis — pas de création admin.');

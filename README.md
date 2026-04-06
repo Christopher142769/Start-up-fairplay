@@ -95,9 +95,15 @@ C’est la méthode la plus simple quand l’API est déjà sur Render : tu exé
 cd server && npm install && npm run seed
 ```
 
-Le script crée les **écoles** par défaut et le **compte admin** s’il n’existe pas encore avec cet e-mail. S’il existe déjà, le mot de passe **n’est pas mis à jour** automatiquement : il faudrait supprimer l’utilisateur admin dans MongoDB ou adapter le script.
+Le script crée les **écoles** par défaut et le **compte admin** s’il n’existe pas encore avec cet e-mail. Si l’admin existe déjà, le mot de passe **n’est pas modifié** sauf si tu lances une fois avec **`ADMIN_RESET_PASSWORD=true`** (même `ADMIN_EMAIL` / `ADMIN_PASSWORD` dans `.env`) :
+
+```bash
+cd server && ADMIN_RESET_PASSWORD=true npm run seed
+```
 
 4. Connecte-toi sur le front déployé via l’URL secrète d’admin (voir `client/src/lib/adminPaths.ts`) avec `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+
+**Si tu vois « Identifiants incorrects »** : l’API Render utilise la base indiquée par **`MONGODB_URI` sur Render**. Vérifie que ton seed local pointe vers **la même** URI. L’e-mail doit être exactement celui en base (insensible à la casse). Si le compte existe mais le mot de passe ne marche plus, utilise `ADMIN_RESET_PASSWORD=true` comme ci-dessus puis réessaie.
 
 **Option 2** (shell Render) : même commande `npm run seed` dans l’environnement du service, avec les variables déjà définies dans le dashboard Render.
 
