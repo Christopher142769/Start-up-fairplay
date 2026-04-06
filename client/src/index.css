@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply min-h-screen bg-[#12061f] text-white antialiased;
+  }
+  select.vibe-select option {
+    background-color: #2a1045;
+    color: #fff;
+  }
+}
